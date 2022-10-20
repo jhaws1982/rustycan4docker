@@ -1,0 +1,19 @@
+[package]
+name = "rustycan4docker"
+version = "0.1.0"
+edition = "2021"
+authors = ["Jonathan Haws <jonathan.haws@witricity.com>"]
+license = "MIT"
+description = "Rust-based VXCAN Docker plugin"
+repository = "https://github.com/jhaws1982/rustycan4docker"
+
+[dependencies]
+warp = "0.3.3"
+bytes = "1.2.1"
+parking_lot = "0.12.1"
+serde = { version = "1.0", features = ["derive"] }
+serde_json = "1.0.87"
+tokio = { version = "1", features = ["macros", "rt-multi-thread", "net"] }
+tokio-stream = { version = "0.1.11", features = ["net"] }
+interfaces = "0.0.8"
+truncrate = "0.1.3"
