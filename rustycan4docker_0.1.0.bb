@@ -8,10 +8,10 @@ inherit cargo
 # how to get rustycan4docker could be as easy as but default to a git checkout:
 # SRC_URI += "crate://crates.io/rustycan4docker/0.1.0"
 SRC_URI += "git://git@github.com/jhaws1982/rustycan4docker.git;protocol=ssh;nobranch=1"
-SRCREV = "a551bedb38cf2ef3585222cff03b7808706de2b0"
+SRCREV = "e5273b936722e970155b4bce570574a72ee18513"
 S = "${WORKDIR}/git"
 CARGO_SRC_DIR = ""
-PV:append = ".AUTOINC+a551bedb38"
+PV:append = ".AUTOINC+e5273b9367"
 
 # please note if you have entries that do not begin with crate://
 # you must change them to how that package can be fetched
