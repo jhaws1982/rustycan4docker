@@ -282,15 +282,17 @@ async fn api_network_join(
                 None => v["Options"].to_string(),
             };
             if !error {
-                let joinrsp: crate::network::JoinResponse =
-                    mgr.endpoint_attach(nuid, epuid, sbox, opt).unwrap();
-
-                let rsp = JoinResponse {
-                    InterfaceName: joinrsp,
-                };
-                let jrsp = serde_json::to_string(&rsp).unwrap();
-                println!("NetworkDriver.Join: {}", jrsp);
-                jrsp
+                match mgr.endpoint_attach(nuid, epuid, sbox, opt) {
+                    Ok(joinrsp) => {
+                        let rsp = JoinResponse {
+                            InterfaceName: joinrsp,
+                        };
+                        let jrsp = serde_json::to_string(&rsp).unwrap();
+                        println!("NetworkDriver.Join: {}", jrsp);
+                        jrsp
+                    }
+                    Err(_) => String::from(r#"{"Err":"Error attaching endpoint to network"}"#),
+                }
             } else {
                 status = http::StatusCode::BAD_REQUEST;
                 String::from(r#"{"Err":"Invalid network ID, endpoint ID, or sandbox key"}"#)

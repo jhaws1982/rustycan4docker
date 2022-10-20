@@ -118,47 +118,53 @@ impl Network {
         peer: String,
     ) -> Result<JoinResponse, Error> {
         let map = self.endpoint_list.read();
-        let ep = map.get(&epuid).unwrap();
+        match map.get(&epuid) {
+            Some(ep) => {
+                // Add cangw rules: self->endpoint, endpoint->self
+                self.add_cangw_rule(&self.ifc, &ep.device);
+                self.add_cangw_rule(&ep.device, &self.ifc);
 
-        // Add cangw rules: self->endpoint, endpoint->self
-        self.add_cangw_rule(&self.ifc, &ep.device);
-        self.add_cangw_rule(&ep.device, &self.ifc);
+                for (uid, endpt) in map.iter() {
+                    if uid.ne(&epuid) {
+                        // Add cangw rules: other->endpoint, endpoint->other
+                        self.add_cangw_rule(&endpt.device, &ep.device);
+                        self.add_cangw_rule(&ep.device, &endpt.device);
+                    }
+                }
 
-        for (uid, endpt) in map.iter() {
-            if uid.ne(&epuid) {
-                // Add cangw rules: other->endpoint, endpoint->other
-                self.add_cangw_rule(&endpt.device, &ep.device);
-                self.add_cangw_rule(&ep.device, &endpt.device);
+                let mut peerifc = &peer;
+                if peer.is_empty() {
+                    peerifc = &self.peer;
+                }
+
+                let rsp = JoinResponse {
+                    SrcName: ep.peer.clone(),
+                    DstPrefix: (*peerifc).clone(),
+                };
+                Ok(rsp)
             }
+            None => Err(Error),
         }
-
-        let mut peerifc = &peer;
-        if peer.is_empty() {
-            peerifc = &self.peer;
-        }
-
-        let rsp = JoinResponse {
-            SrcName: ep.peer.clone(),
-            DstPrefix: (*peerifc).clone(),
-        };
-        Ok(rsp)
     }
 
     pub fn endpoint_detach(&mut self, epuid: String) {
         let map = self.endpoint_list.read();
-        let ep = map.get(&epuid).unwrap();
+        match map.get(&epuid) {
+            Some(ep) => {
+                for (uid, endpt) in map.iter() {
+                    if uid.ne(&epuid) {
+                        // Remove cangw rules: other->endpoint, endpoint->other
+                        self.remove_cangw_rule(&endpt.device, &ep.device);
+                        self.remove_cangw_rule(&ep.device, &endpt.device);
+                    }
+                }
 
-        for (uid, endpt) in map.iter() {
-            if uid.ne(&epuid) {
-                // Remove cangw rules: other->endpoint, endpoint->other
-                self.remove_cangw_rule(&endpt.device, &ep.device);
-                self.remove_cangw_rule(&ep.device, &endpt.device);
+                // Remove cangw rules: self->endpoint, endpoint->self
+                self.remove_cangw_rule(&ep.device, &self.ifc);
+                self.remove_cangw_rule(&self.ifc, &ep.device);
             }
-        }
-
-        // Remove cangw rules: self->endpoint, endpoint->self
-        self.remove_cangw_rule(&ep.device, &self.ifc);
-        self.remove_cangw_rule(&self.ifc, &ep.device);
+            None => (),
+        };
     }
 
     fn add_cangw_rule(&self, src: &String, dst: &String) {
@@ -215,7 +221,7 @@ impl Network {
             let index = rules
                 .iter()
                 .position(|x| *x == (src.clone(), dst.clone()))
-                .unwrap();
+                .unwrap(); // safe unwrap since we already verified key exists
             rules.remove(index);
         }
     }
