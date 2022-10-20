@@ -66,10 +66,16 @@ async fn api_plugin_activate(payload: bytes::Bytes) -> Result<impl warp::Reply, 
         Implements: vec![String::from("NetworkDriver")],
     };
 
-    let jrsp = serde_json::to_string(&rsp).unwrap();
+    let mut status: http::StatusCode = http::StatusCode::OK;
+    let jrsp = match serde_json::to_string(&rsp) {
+        Ok(jrsp) => jrsp,
+        Err(_) => {
+            status = http::StatusCode::BAD_REQUEST;
+            String::from(r#"{"Err":"Serializing response to Plugin.Activate"}"#)
+        }
+    };
     println!("Plugin.Activate: {}", jrsp);
-    Ok(warp::reply::with_status(jrsp, http::StatusCode::OK))
-    // ! TODO Add error handling
+    Ok(warp::reply::with_status(jrsp, status))
 }
 
 async fn api_get_capabilities(payload: bytes::Bytes) -> Result<impl warp::Reply, warp::Rejection> {
@@ -79,10 +85,17 @@ async fn api_get_capabilities(payload: bytes::Bytes) -> Result<impl warp::Reply,
         ConnectivityScope: String::from("local"),
     };
 
-    let jrsp = serde_json::to_string(&rsp).unwrap();
+    let mut status: http::StatusCode = http::StatusCode::OK;
+    let jrsp = match serde_json::to_string(&rsp) {
+        Ok(jrsp) => jrsp,
+        Err(_) => {
+            status = http::StatusCode::BAD_REQUEST;
+            String::from(r#"{"Err":"Serializing response to NetworkDriver.GetCapabilities"}"#)
+        }
+    };
+
     println!("NetworkDriver.GetCapabilities: {}", jrsp);
-    Ok(warp::reply::with_status(jrsp, http::StatusCode::OK))
-    // ! TODO Add error handling
+    Ok(warp::reply::with_status(jrsp, status))
 }
 
 async fn api_network_create(
@@ -118,6 +131,7 @@ async fn api_network_create(
         Err(_) => r#"{"Err":"Unable to parse JSON payload"}"#,
     };
 
+    println!("NetworkDriver.CreateNetwork: {}", reply);
     Ok(warp::reply::with_status(reply, status))
 }
 
@@ -150,6 +164,7 @@ async fn api_network_delete(
         Err(_) => r#"{"Err":"Unable to parse JSON payload"}"#,
     };
 
+    println!("NetworkDriver.DeleteNetwork: {}", reply);
     Ok(warp::reply::with_status(reply, status))
 }
 
@@ -190,6 +205,7 @@ async fn api_endpoint_create(
         Err(_) => r#"{"Err":"Unable to parse JSON payload"}"#,
     };
 
+    println!("NetworkDriver.CreateEndpoint: {}", reply);
     Ok(warp::reply::with_status(reply, status))
 }
 
@@ -230,6 +246,7 @@ async fn api_endpoint_delete(
         Err(_) => r#"{"Err":"Unable to parse JSON payload"}"#,
     };
 
+    println!("NetworkDriver.DeleteEndpoint: {}", reply);
     Ok(warp::reply::with_status(reply, status))
 }
 
@@ -287,9 +304,12 @@ async fn api_network_join(
                         let rsp = JoinResponse {
                             InterfaceName: joinrsp,
                         };
-                        let jrsp = serde_json::to_string(&rsp).unwrap();
-                        println!("NetworkDriver.Join: {}", jrsp);
-                        jrsp
+                        match serde_json::to_string(&rsp) {
+                            Ok(jrsp) => jrsp,
+                            Err(_) => String::from(
+                                r#"{"Err":"Serializing response to NetworkDriver.Join"}"#,
+                            ),
+                        }
                     }
                     Err(_) => String::from(r#"{"Err":"Error attaching endpoint to network"}"#),
                 }
@@ -301,6 +321,7 @@ async fn api_network_join(
         Err(_) => String::from(r#"{"Err":"Unable to parse JSON payload"}"#),
     };
 
+    println!("NetworkDriver.Join: {}", reply);
     Ok(warp::reply::with_status(reply, status))
 }
 
@@ -341,6 +362,7 @@ async fn api_network_leave(
         Err(_) => r#"{"Err":"Unable to parse JSON payload"}"#,
     };
 
+    println!("NetworkDriver.Leave: {}", reply);
     Ok(warp::reply::with_status(reply, status))
 }
 
