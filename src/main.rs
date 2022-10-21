@@ -26,6 +26,7 @@
 
 use crate::manager::NetworkManager;
 use serde::{Deserialize, Serialize};
+use std::collections::HashMap;
 use std::vec::Vec;
 use tokio::net::UnixListener;
 use tokio_stream::wrappers::UnixListenerStream;
@@ -116,9 +117,9 @@ async fn api_network_create(
                     String::new()
                 }
             };
-            let opt = match v["Options"].as_str() {
+            let opt = match v["Options"]["com.docker.network.generic"].as_str() {
                 Some(o) => o.to_string(),
-                None => v["Options"].to_string(),
+                None => v["Options"]["com.docker.network.generic"].to_string(),
             };
             if !error {
                 mgr.network_create(uid, opt);
@@ -400,6 +401,7 @@ fn process_body() -> impl Filter<Extract = (bytes::Bytes,), Error = warp::Reject
 #[tokio::main]
 async fn main() {
     let mgr = NetworkManager::new();
+    mgr.network_load().await;
     let filter = warp::any().map(move || mgr.clone());
 
     let payload = warp::post()

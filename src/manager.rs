@@ -44,6 +44,43 @@ impl NetworkManager {
         }
     }
 
+    pub async fn network_load(&self) {
+        let docker = docker_api::Docker::new("unix:///run/docker.sock").unwrap();
+
+        match docker.networks().list(&Default::default()).await {
+            Ok(networks) => {
+                for n in networks {
+                    match (n.driver, n.options, n.id) {
+                        (Some(driver), Some(options), Some(nid)) => {
+                            if driver.eq("rustyvxcan") {
+                                let mut d: String = String::from("vcan");
+                                let mut p: String = String::from("vcan");
+                                let mut c: u32 = 0u32;
+                                if options.contains_key("vxcan.dev") {
+                                    d = options["vxcan.dev"].clone();
+                                }
+                                if options.contains_key("vxcan.peer") {
+                                    p = options["vxcan.peer"].clone();
+                                }
+                                if options.contains_key("vxcan.id") {
+                                    c = match options["vxcan.id"].trim().parse() {
+                                        Ok(i) => i,
+                                        Err(_) => 0u32,
+                                    };
+                                }
+
+                                let nw = Network::new(d, p, c);
+                                self.network_list.write().insert(nid, nw);
+                            }
+                        }
+                        _ => {}
+                    }
+                }
+            }
+            Err(e) => eprintln!(" !! Unable to get docker networks: {}", e),
+        }
+    }
+
     pub fn network_create(&self, uid: String, options: String) {
         // Print the options and extract the right values
         // Add the network to the hashmap
@@ -52,47 +89,13 @@ impl NetworkManager {
             uid, options
         );
 
-        match serde_json::from_str::<serde_json::Value>(&options) {
-            Ok(v) => {
-                let device = match v["com.docker.network.generic"]["vxcan.dev"].as_str() {
-                    Some(u) => u.to_string(),
-                    None => {
-                        println!(
-                            " !! Error parsing vxcan.dev option: {}",
-                            v["com.docker.network.generic"]["vxcan.dev"]
-                        );
-                        String::from("vcan")
-                    }
-                };
-                let peer = match v["com.docker.network.generic"]["vxcan.peer"].as_str() {
-                    Some(u) => u.to_string(),
-                    None => {
-                        println!(
-                            " !! Error parsing vxcan.peer option: {}",
-                            v["com.docker.network.generic"]["vxcan.peer"]
-                        );
-                        String::from("vcanp")
-                    }
-                };
-                let canid: u32 = match v["com.docker.network.generic"]["vxcan.id"].as_str() {
-                    Some(u) => match u.to_string().trim().parse() {
-                        Ok(i) => i,
-                        Err(_) => 0u32,
-                    },
-                    None => {
-                        println!(
-                            " !! Error parsing vxcan.dev option: {}",
-                            v["com.docker.network.generic"]["vxcan.dev"]
-                        );
-                        0u32
-                    }
-                };
-
-                let nw = Network::new(device, peer, canid);
+        match self.options_parse(options) {
+            Ok((d, p, c)) => {
+                let nw = Network::new(d, p, c);
                 self.network_list.write().insert(uid, nw);
             }
-            Err(_) => (),
-        };
+            Err(_) => {}
+        }
     }
 
     pub fn network_delete(&self, uid: String) {
@@ -169,5 +172,40 @@ impl NetworkManager {
             }
             None => (),
         };
+    }
+
+    fn options_parse(&self, options: String) -> Result<(String, String, u32), Error> {
+        match serde_json::from_str::<serde_json::Value>(&options) {
+            Ok(v) => {
+                let device = match v["vxcan.dev"].as_str() {
+                    Some(u) => u.to_string(),
+                    None => {
+                        println!(" !! Error parsing vxcan.dev option: {}", v["vxcan.dev"]);
+                        String::from("vcan")
+                    }
+                };
+                let peer = match v["vxcan.peer"].as_str() {
+                    Some(u) => u.to_string(),
+                    None => {
+                        println!(" !! Error parsing vxcan.peer option: {}", v["vxcan.peer"]);
+                        String::from("vcanp")
+                    }
+                };
+                let canid: u32 = match v["vxcan.id"].as_str() {
+                    Some(u) => match u.to_string().trim().parse() {
+                        Ok(i) => i,
+                        Err(_) => 0u32,
+                    },
+                    None => {
+                        println!(" !! Error parsing vxcan.dev option: {}", v["vxcan.dev"]);
+                        0u32
+                    }
+                };
+
+                // Return the tuple of options
+                Ok((device, peer, canid))
+            }
+            Err(_) => Err(Error),
+        }
     }
 }
