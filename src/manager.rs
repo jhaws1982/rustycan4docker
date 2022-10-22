@@ -26,6 +26,8 @@
 
 use crate::endpoint::Endpoint;
 use crate::network::{JoinResponse, Network};
+use bollard::network::ListNetworksOptions;
+use bollard::Docker;
 use parking_lot::RwLock;
 use std::collections::HashMap;
 use std::fmt::Error;
@@ -40,14 +42,18 @@ impl NetworkManager {
     pub fn new() -> Self {
         NetworkManager {
             network_list: Arc::new(RwLock::new(HashMap::new())),
-            // ! TODO: Load existing docker networks using this driver
         }
     }
 
     pub async fn network_load(&self) {
-        let docker = docker_api::Docker::new("unix:///run/docker.sock").unwrap();
+        let connection = Docker::connect_with_unix_defaults().unwrap();
 
-        match docker.networks().list(&Default::default()).await {
+
+        let list_networks_filters: HashMap<&str, Vec<&str>> = HashMap::new();
+        let config = ListNetworksOptions {
+            filters: list_networks_filters,
+        };
+        match connection.list_networks(Some(config)).await {
             Ok(networks) => {
                 for n in networks {
                     match (n.driver, n.options, n.id) {
