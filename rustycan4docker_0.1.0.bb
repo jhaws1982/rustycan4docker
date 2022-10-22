@@ -7,11 +7,11 @@ inherit cargo
 
 # how to get rustycan4docker could be as easy as but default to a git checkout:
 # SRC_URI += "crate://crates.io/rustycan4docker/0.1.0"
-SRC_URI += "git://git@github.com/jhaws1982/rustycan4docker.git;protocol=ssh;nobranch=1"
-SRCREV = "73047e6dd9b41fe5eb2f2aa78729fa18a3fe52b4"
+SRC_URI += "git://github.com/jhaws1982/rustycan4docker;protocol=https;nobranch=1"
+SRCREV = "8f84204e33b47d94bb694a909abe15ab1ea18d0d"
 S = "${WORKDIR}/git"
 CARGO_SRC_DIR = ""
-PV:append = ".AUTOINC+73047e6dd9"
+PV:append = ".AUTOINC+8f84204e33"
 
 # please note if you have entries that do not begin with crate://
 # you must change them to how that package can be fetched
@@ -21,6 +21,8 @@ SRC_URI += " \
     crate://crates.io/base64/0.13.0 \
     crate://crates.io/bitflags/1.3.2 \
     crate://crates.io/block-buffer/0.10.3 \
+    crate://crates.io/bollard-stubs/1.42.0-rc.3 \
+    crate://crates.io/bollard/0.13.0 \
     crate://crates.io/buf_redux/0.8.4 \
     crate://crates.io/byteorder/1.4.3 \
     crate://crates.io/bytes/1.2.1 \
@@ -28,12 +30,16 @@ SRC_URI += " \
     crate://crates.io/cfg-if/1.0.0 \
     crate://crates.io/cpufeatures/0.2.5 \
     crate://crates.io/crypto-common/0.1.6 \
+    crate://crates.io/darling/0.13.4 \
+    crate://crates.io/darling_core/0.13.4 \
+    crate://crates.io/darling_macro/0.13.4 \
     crate://crates.io/digest/0.10.5 \
     crate://crates.io/fastrand/1.8.0 \
     crate://crates.io/fnv/1.0.7 \
     crate://crates.io/form_urlencoded/1.1.0 \
     crate://crates.io/futures-channel/0.3.25 \
     crate://crates.io/futures-core/0.3.25 \
+    crate://crates.io/futures-macro/0.3.25 \
     crate://crates.io/futures-sink/0.3.25 \
     crate://crates.io/futures-task/0.3.25 \
     crate://crates.io/futures-util/0.3.25 \
@@ -45,11 +51,14 @@ SRC_URI += " \
     crate://crates.io/headers-core/0.2.0 \
     crate://crates.io/headers/0.3.8 \
     crate://crates.io/hermit-abi/0.1.19 \
+    crate://crates.io/hex/0.4.3 \
     crate://crates.io/http-body/0.4.5 \
     crate://crates.io/http/0.2.8 \
     crate://crates.io/httparse/1.8.0 \
     crate://crates.io/httpdate/1.0.2 \
     crate://crates.io/hyper/0.14.20 \
+    crate://crates.io/hyperlocal/0.8.0 \
+    crate://crates.io/ident_case/1.0.1 \
     crate://crates.io/idna/0.3.0 \
     crate://crates.io/indexmap/1.9.1 \
     crate://crates.io/instant/0.1.12 \
@@ -98,11 +107,14 @@ SRC_URI += " \
     crate://crates.io/serde_derive/1.0.145 \
     crate://crates.io/serde_json/1.0.87 \
     crate://crates.io/serde_urlencoded/0.7.1 \
+    crate://crates.io/serde_with/1.14.0 \
+    crate://crates.io/serde_with_macros/1.5.2 \
     crate://crates.io/sha-1/0.10.0 \
     crate://crates.io/sha1/0.10.5 \
     crate://crates.io/slab/0.4.7 \
     crate://crates.io/smallvec/1.10.0 \
     crate://crates.io/socket2/0.4.7 \
+    crate://crates.io/strsim/0.10.0 \
     crate://crates.io/syn/1.0.102 \
     crate://crates.io/tempfile/3.3.0 \
     crate://crates.io/thiserror-impl/1.0.37 \
