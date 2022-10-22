@@ -1,0 +1,12 @@
+[Unit]
+Description=Docker VXCAN plugin
+Before=docker.service
+After=network.target
+
+[Service]
+Type=simple
+ExecStartPre=/usr/bin/mkdir -p /run/docker/plugins
+ExecStart=/usr/bin/rustycan4docker
+
+[Install]
+WantedBy=multi-user.target
