@@ -8,28 +8,37 @@ inherit cargo
 # how to get rustycan4docker could be as easy as but default to a git checkout:
 # SRC_URI += "crate://crates.io/rustycan4docker/0.1.0"
 SRC_URI += "git://github.com/jhaws1982/rustycan4docker;protocol=https;nobranch=1"
-SRCREV = "8f84204e33b47d94bb694a909abe15ab1ea18d0d"
+SRCREV = "b50766223f52fa9ef320d300c7cb4bebcb1e4c15"
 S = "${WORKDIR}/git"
 CARGO_SRC_DIR = ""
-PV:append = ".AUTOINC+8f84204e33"
+PV:append = ".AUTOINC+b50766223f"
 
 # please note if you have entries that do not begin with crate://
 # you must change them to how that package can be fetched
 SRC_URI += " \
     crate://crates.io/aho-corasick/0.6.10 \
+    crate://crates.io/android_system_properties/0.1.5 \
     crate://crates.io/autocfg/1.1.0 \
     crate://crates.io/base64/0.13.0 \
     crate://crates.io/bitflags/1.3.2 \
     crate://crates.io/block-buffer/0.10.3 \
-    crate://crates.io/bollard-stubs/1.42.0-rc.3 \
-    crate://crates.io/bollard/0.13.0 \
+    crate://crates.io/bollard-stubs/1.42.0-rc.0 \
+    crate://crates.io/bollard/0.12.0 \
     crate://crates.io/buf_redux/0.8.4 \
+    crate://crates.io/bumpalo/3.11.1 \
     crate://crates.io/byteorder/1.4.3 \
     crate://crates.io/bytes/1.2.1 \
     crate://crates.io/cc/1.0.73 \
     crate://crates.io/cfg-if/1.0.0 \
+    crate://crates.io/chrono/0.4.22 \
+    crate://crates.io/codespan-reporting/0.11.1 \
+    crate://crates.io/core-foundation-sys/0.8.3 \
     crate://crates.io/cpufeatures/0.2.5 \
     crate://crates.io/crypto-common/0.1.6 \
+    crate://crates.io/cxx-build/1.0.80 \
+    crate://crates.io/cxx/1.0.80 \
+    crate://crates.io/cxxbridge-flags/1.0.80 \
+    crate://crates.io/cxxbridge-macro/1.0.80 \
     crate://crates.io/darling/0.13.4 \
     crate://crates.io/darling_core/0.13.4 \
     crate://crates.io/darling_macro/0.13.4 \
@@ -58,15 +67,19 @@ SRC_URI += " \
     crate://crates.io/httpdate/1.0.2 \
     crate://crates.io/hyper/0.14.20 \
     crate://crates.io/hyperlocal/0.8.0 \
+    crate://crates.io/iana-time-zone-haiku/0.1.1 \
+    crate://crates.io/iana-time-zone/0.1.53 \
     crate://crates.io/ident_case/1.0.1 \
     crate://crates.io/idna/0.3.0 \
     crate://crates.io/indexmap/1.9.1 \
     crate://crates.io/instant/0.1.12 \
     crate://crates.io/interfaces/0.0.8 \
     crate://crates.io/itoa/1.0.4 \
+    crate://crates.io/js-sys/0.3.60 \
     crate://crates.io/lazy_static/0.2.11 \
     crate://crates.io/lazy_static/1.4.0 \
     crate://crates.io/libc/0.2.135 \
+    crate://crates.io/link-cplusplus/1.0.7 \
     crate://crates.io/lock_api/0.4.9 \
     crate://crates.io/log/0.3.9 \
     crate://crates.io/log/0.4.17 \
@@ -77,6 +90,8 @@ SRC_URI += " \
     crate://crates.io/mio/0.8.4 \
     crate://crates.io/multipart/0.18.0 \
     crate://crates.io/nix/0.23.1 \
+    crate://crates.io/num-integer/0.1.45 \
+    crate://crates.io/num-traits/0.2.15 \
     crate://crates.io/num_cpus/1.13.1 \
     crate://crates.io/once_cell/1.15.0 \
     crate://crates.io/parking_lot/0.12.1 \
@@ -103,6 +118,7 @@ SRC_URI += " \
     crate://crates.io/safemem/0.3.3 \
     crate://crates.io/scoped-tls/1.0.0 \
     crate://crates.io/scopeguard/1.1.0 \
+    crate://crates.io/scratch/1.0.2 \
     crate://crates.io/serde/1.0.145 \
     crate://crates.io/serde_derive/1.0.145 \
     crate://crates.io/serde_json/1.0.87 \
@@ -117,9 +133,11 @@ SRC_URI += " \
     crate://crates.io/strsim/0.10.0 \
     crate://crates.io/syn/1.0.102 \
     crate://crates.io/tempfile/3.3.0 \
+    crate://crates.io/termcolor/1.1.3 \
     crate://crates.io/thiserror-impl/1.0.37 \
     crate://crates.io/thiserror/1.0.37 \
     crate://crates.io/thread_local/0.3.6 \
+    crate://crates.io/time/0.1.44 \
     crate://crates.io/tinyvec/1.6.0 \
     crate://crates.io/tinyvec_macros/0.1.0 \
     crate://crates.io/tokio-macros/1.8.0 \
@@ -141,14 +159,22 @@ SRC_URI += " \
     crate://crates.io/unicode-ident/1.0.5 \
     crate://crates.io/unicode-normalization/0.1.22 \
     crate://crates.io/unicode-segmentation/1.10.0 \
+    crate://crates.io/unicode-width/0.1.10 \
     crate://crates.io/url/2.3.1 \
     crate://crates.io/utf-8/0.7.6 \
     crate://crates.io/utf8-ranges/1.0.5 \
     crate://crates.io/version_check/0.9.4 \
     crate://crates.io/want/0.3.0 \
     crate://crates.io/warp/0.3.3 \
+    crate://crates.io/wasi/0.10.0+wasi-snapshot-preview1 \
     crate://crates.io/wasi/0.11.0+wasi-snapshot-preview1 \
+    crate://crates.io/wasm-bindgen-backend/0.2.83 \
+    crate://crates.io/wasm-bindgen-macro-support/0.2.83 \
+    crate://crates.io/wasm-bindgen-macro/0.2.83 \
+    crate://crates.io/wasm-bindgen-shared/0.2.83 \
+    crate://crates.io/wasm-bindgen/0.2.83 \
     crate://crates.io/winapi-i686-pc-windows-gnu/0.4.0 \
+    crate://crates.io/winapi-util/0.1.5 \
     crate://crates.io/winapi-x86_64-pc-windows-gnu/0.4.0 \
     crate://crates.io/winapi/0.3.9 \
     crate://crates.io/windows-sys/0.36.1 \
