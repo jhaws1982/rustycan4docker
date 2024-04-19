@@ -11,7 +11,7 @@ do_install:append() {
     install -m 0644 ${S}/rustyvxcan.service ${D}${systemd_system_unitdir}/
 
     install -d ${D}${bindir}
-    install -m 0755 ${WORKDIR}/build/target/arm-lmp-linux-gnueabi/release/rustycan4docker ${D}${bindir}/
+    install -m 0755 ${WORKDIR}/build/target/${HOST_SYS}/release/rustycan4docker ${D}${bindir}/
 }
 
 SYSTEMD_AUTO_ENABLE:${PN} = "enable"
